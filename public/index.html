@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Areeba Assignment</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        #messageContainer {
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .user-message {
+            background-color: #e1ffc7;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 5px 0;
+            width: fit-content;
+            align-self: flex-end;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .server-response {
+            background-color: #d1e7fd;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 5px 0;
+            width: fit-content;
+            align-self: flex-start;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message-form {
+            display: flex;
+            margin-top: 10px;
+        }
+
+        #userMessage {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 10px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            margin-left: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .message-sender {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+    </style>
+    <script>
+        const socket = io();
+
+        function sendMessage() {
+            const userMessage = document.getElementById('userMessage').value;
+            if (userMessage) {
+                socket.emit('message', userMessage);
+                document.getElementById('userMessage').value = '';
+                displayMessage(userMessage, 'user'); // Display user message
+            }
+        }
+
+        socket.on('message', (msg) => {
+            displayMessage(msg, 'server'); // Display server response
+        });
+
+        function displayMessage(msg, sender) {
+            const messageArea = document.getElementById('messages');
+            const messageElement = document.createElement('div');
+            messageElement.className = sender === 'user' ? 'user-message' : 'server-response';
+
+            // Create a span for the sender label
+            const senderLabel = document.createElement('span');
+            senderLabel.textContent = sender === 'user' ? 'User:' : 'Server:';
+            senderLabel.className = 'message-sender';
+
+            // Append the sender label and the message to the message element
+            messageElement.appendChild(senderLabel);
+            messageElement.appendChild(document.createTextNode(msg));
+            messageArea.appendChild(messageElement);
+            messageArea.scrollTop = messageArea.scrollHeight; // Scroll to the bottom
+        }
+    </script>
+</head>
+<body>
+    <h1>Areeba assigemnt</h1>
+    <div id="messageContainer">
+        <div id="messages"></div>
+    </div>
+    <div class="message-form">
+        <input id="userMessage" type="text" placeholder="Type a message..." />
+        <button onclick="sendMessage()">Send</button>
+    </div>
+</body>
+</html>
